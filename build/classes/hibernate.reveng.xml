@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-reverse-engineering PUBLIC "-//Hibernate/Hibernate Reverse Engineering DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-reverse-engineering-3.0.dtd" >
+
+<hibernate-reverse-engineering>
+	<table-filter match-schema="INTEGRATEUR" match-name=".*"></table-filter>
+	<table schema="INTEGRATEUR" name="SLI">
+		<column name="JOB"></column>
+		<column name="NB_JOB"></column>
+		<column name="LIBMEMB"></column>
+		<column name="CLASS"></column>
+		<column name="SUBLIB"></column>
+		<column name="SYSID"></column>
+		<column name="FAIL_CODE"></column>
+		<column name="JOB_APPEL"></column>
+	</table>
+	<table schema="INTEGRATEUR" name="JOB_APPEL">
+		<column name="JOB_APPEL"></column>
+		<column name="JOB"></column>
+	</table>
+</hibernate-reverse-engineering>
