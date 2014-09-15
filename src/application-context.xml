@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:sec="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+			http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd
+			http://www.springframework.org/schema/integration/security http://www.springframework.org/schema/integration/security/spring-integration-security-2.0.xsd">
+
+
+
+	<bean name="extractdataService" class="manage.appli.patri.awb.service.ExtractDataImp" />
+	<bean name="concatfileService" class="manage.appli.patri.awb.service.ConcatFileImp" />
+	<bean name="execCommandeService" class="manage.appli.patri.awb.service.ExecCommandeImp" />
+	<bean name="authenticationService"
+		class="manage.appli.patri.awb.service.AuthenticationServiceImp" />
+	<bean name="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+
+		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+		<property name="url"
+			value="jdbc:oracle:thin:@INTEGDEV.BorjSieges.Borj.net:1521:AWBPATRIAP" />
+		<property name="username" value="integrateur" />
+		<property name="password" value="Pa123456" />
+	</bean>
+
+	<bean name="sessionFactory"
+		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="annotatedClasses">
+			<list>
+				<value>manage.appli.patri.awb.modele.AnomPrgDv</value>
+				<value>manage.appli.patri.awb.modele.AnomPrgDvId</value>
+				<value>manage.appli.patri.awb.modele.AnomRunPrg</value>
+				<value>manage.appli.patri.awb.modele.AnomRunPrgId</value>
+				<value>manage.appli.patri.awb.modele.AreaAwb</value>
+				<value>manage.appli.patri.awb.modele.Cft</value>
+				<value>manage.appli.patri.awb.modele.CftId</value>
+				<value>manage.appli.patri.awb.modele.DatabaseAwb</value>
+				<value>manage.appli.patri.awb.modele.DataviewDatacom</value>
+				<value>manage.appli.patri.awb.modele.DataviewIdeal</value>
+				<value>manage.appli.patri.awb.modele.JobAppel</value>
+				<value>manage.appli.patri.awb.modele.Programs</value>
+				<value>manage.appli.patri.awb.modele.ProgramsId</value>
+				<value>manage.appli.patri.awb.modele.RelatDatacom</value>
+				<value>manage.appli.patri.awb.modele.RelatDatacomId</value>
+				<value>manage.appli.patri.awb.modele.RelatIdeal</value>
+				<value>manage.appli.patri.awb.modele.RelatIdealId</value>
+				<value>manage.appli.patri.awb.modele.RelatSliSched</value>
+				<value>manage.appli.patri.awb.modele.RelatSliSchedId</value>
+				<value>manage.appli.patri.awb.modele.RunPrg</value>
+				<value>manage.appli.patri.awb.modele.RunPrgId</value>
+				<value>manage.appli.patri.awb.modele.Scheduler</value>
+				<value>manage.appli.patri.awb.modele.Sli</value>
+				<value>manage.appli.patri.awb.modele.TableAwb</value>
+				<value>manage.appli.patri.awb.modele.Urt</value>
+				<value>manage.appli.patri.awb.modele.UrtId</value>
+				<value>manage.appli.patri.awb.modele.UsePanel</value>
+				<value>manage.appli.patri.awb.modele.UsePanelId</value>
+				<value>manage.appli.patri.awb.modele.UsePgm</value>
+				<value>manage.appli.patri.awb.modele.UsePgmId</value>
+				<value>manage.appli.patri.awb.modele.UseReport</value>
+				<value>manage.appli.patri.awb.modele.UseReportId</value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.Oracle10gDialect</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean name="transactionManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	<context:annotation-config />
+
+	<context:component-scan base-package="manage.appli.patri.awb" />
+
+	<sec:http access-denied-page="/accessDenied.jsf">
+		<sec:form-login login-page="/login.jsf"
+			default-target-url="/" />
+
+		<sec:intercept-url pattern="/views/**" access="ROLE_USER,ROLE_ADMIN" />
+		<sec:intercept-url pattern="/sections/**" access="ROLE_USER,ROLE_ADMIN" />
+		<sec:intercept-url pattern="/templates/**" access="ROLE_USER,ROLE_ADMIN" />
+
+		<sec:logout logout-success-url="/logout.jsf"
+			invalidate-session="true" />
+		<sec:session-management invalid-session-url="/logout.jsf">
+			<sec:concurrency-control max-sessions="1"
+				error-if-maximum-exceeded="true" />
+		</sec:session-management>
+	</sec:http>
+
+	<sec:global-method-security
+		secured-annotations="enabled" jsr250-annotations="enabled">
+	</sec:global-method-security>
+	<sec:authentication-manager alias="authenticationManager">
+		<sec:authentication-provider>
+			<sec:user-service>
+				<sec:user name="integrateur" password="Pa123456"
+					authorities="ROLE_USER, ROLE_ADMIN" />
+				<sec:user name="client" password="p123456" authorities="ROLE_USER" />
+			</sec:user-service>
+		</sec:authentication-provider>
+	</sec:authentication-manager>
+	<bean id="loggerListener"
+		class="org.springframework.security.authentication.event.LoggerListener" />
+
+</beans>
